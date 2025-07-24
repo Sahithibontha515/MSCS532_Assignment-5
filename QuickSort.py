@@ -2,16 +2,16 @@ import random
 import time
 import tracemalloc
 
-''' Function that uses deterministic quick sort and randomized quick sort '''
-def sort_elements_using_quicksort(elements, isRandomized = False):
+import sys
+sys.setrecursionlimit(20000)
+
+''' Function that uses deterministic quick sort '''
+def sort_elements_using_quicksort(elements):
     if len(elements) <= 1:
         return elements
     
-    # if randomized, select a random pivot element
-    if isRandomized:
-        pivot = elements[random.randint(0, len(elements) - 1)]
-    else:
-        pivot = elements[0]
+   
+    pivot = elements[0]
 
     less_pivot_elements = []
     greater_pivot_elements = []
@@ -30,15 +30,36 @@ def sort_elements_using_quicksort(elements, isRandomized = False):
     return sort_elements_using_quicksort(less_pivot_elements) + equal_pivot_elements + sort_elements_using_quicksort(greater_pivot_elements)
 
 
+def sort_elements_using_randomized_quicksort(elements):
+    if len(elements) <= 1:
+        return elements
+    
+    pivot = elements[random.randint(0, len(elements) - 1)]
+
+    less_pivot_elements = []
+    greater_pivot_elements = []
+    equal_pivot_elements = []
+
+    # group the elements based on the pivot elements
+    for num in elements:
+        if num < pivot:
+            less_pivot_elements.append(num)
+        elif num > pivot:
+            greater_pivot_elements.append(num)
+        else:
+            equal_pivot_elements.append(num)
+    
+    # recursively sort the elements
+    return sort_elements_using_randomized_quicksort(less_pivot_elements) + equal_pivot_elements + sort_elements_using_randomized_quicksort(greater_pivot_elements)
+
+
 
 def evaluate_sort(name,arr, sort_fn):
     tracemalloc.start()
     start_time = time.perf_counter()
     
-    if (name == "Randomized Quicksort"):
-        sorted_result = sort_fn(arr, isRandomized=True)
-    else:
-        sorted_result = sort_fn(arr)
+   
+    sorted_result = sort_fn(arr)
 
     end_time = time.perf_counter()
     current, peak = tracemalloc.get_traced_memory()
@@ -71,6 +92,6 @@ if __name__ == "__main__":
     }
 
     run_comparison("Deterministic Quicksort", sort_elements_using_quicksort, datasets)
-    run_comparison("Randomized Quicksort", sort_elements_using_quicksort, datasets)
+    run_comparison("Randomized Quicksort", sort_elements_using_randomized_quicksort, datasets)
 
 
